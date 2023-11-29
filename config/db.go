@@ -3,35 +3,37 @@ package config
 import (
 	"fmt"
 	"os"
-	"strconv"
 	"assigment2/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"github.com/joho/godotenv"
 )
 
 
 var db *gorm.DB
 var err error
-
-var host = os.Getenv("PGHOST")
-var port = os.Getenv("PGPORT")
-var user = os.Getenv("PGUSER")
-var pass = os.Getenv("PGPASSWORD")
-var dbname = os.Getenv("PGDBNAME")
-
 func ConnectGorm(){
-	portDB, err:= strconv.Atoi(port)
+	err := godotenv.Load()
 	if err != nil{
 		panic(err)
 	}
 
+	var(
+		host 		= os.Getenv("PGHOST")
+		port 		= os.Getenv("PGPORT")
+		user 		= os.Getenv("PGUSER")
+		password	= os.Getenv("PGPASSWORD")
+		dbname		= os.Getenv("PGDBNAME")	
+	)
+
 	psqlInfo := fmt.Sprintf(`
 	host=%s
-	port=%d
+	port=%s
 	user=%s`+`
 	password=%s
 	dbname=%s
-	sslmode=disable`, host, portDB, user, pass, dbname)
+	sslmode=disable`,
+	 host, port, user, password, dbname)
 
 	db, err = gorm.Open(postgres.Open(psqlInfo), &gorm.Config{})
 	if err != nil{
